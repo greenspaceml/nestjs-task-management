@@ -6,12 +6,15 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskStatus } from './task-status.enum';
 import { FilterTaskDto } from './dto/filter-task.dto';
 import { User } from '../auth/user.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(TasksRepository)
-    private tasksRepository: TasksRepository
+    private tasksRepository: TasksRepository,
+    private eventEmitter: EventEmitter2
   ) {
   }
 
@@ -28,15 +31,21 @@ export class TasksService {
   }
 
   createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
-    return this.tasksRepository.createTask(createTaskDto, user);
+    const result = this.tasksRepository.createTask(createTaskDto, user);
+    // this.eventEmitter.emit(
+    //   'order.created',
+    //   user
+    // );
+    return result;
   }
 
-  async deleteTask(id: string, user: User): Promise<void> {
+  async deleteTask(id: string, user: User): Promise<{ id: string }> {
     const result = await this.tasksRepository.delete({ id, user });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
+    return { id };
   }
 
   async updateTaskStatus(id: string, status: TaskStatus, user: User): Promise<Task> {
@@ -45,5 +54,19 @@ export class TasksService {
     await this.tasksRepository.save(task);
     return task;
   }
+
+  async updateTask(id: string, info: UpdateTaskDto, user: User): Promise<Task> {
+    const task = await this.getTaskById(id, user);
+    task.status = info.status;
+    task.title = info.title;
+    task.description = info.description;
+    await this.tasksRepository.save(task);
+    return task;
+  }
+
+  // @OnEvent('order.created')
+  // handleOrderCreatedEvent(payload: User) {
+  //   console.log('Task is created by the user: ', payload.username);
+  // }
 
 }
