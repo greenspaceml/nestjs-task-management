@@ -10,7 +10,9 @@ export class TasksRepository extends Repository<Task> {
 
   async getTasks(filterTaskDto: FilterTaskDto, user: User): Promise<Task[]> {
     const { status, search } = filterTaskDto;
-    const query = this.createQueryBuilder('task');
+    const query = this.createQueryBuilder('task')
+      .leftJoinAndSelect('task.user', 'user', 'task.userId = user.id')
+      .select(['task.*, user.username']);
     query.where({
       user: user,
     });
@@ -23,7 +25,7 @@ export class TasksRepository extends Repository<Task> {
         { search: `%${search}%` });
     }
 
-    const tasks = await query.getMany();
+    const tasks = await query.getRawMany();
     return tasks;
   }
 
