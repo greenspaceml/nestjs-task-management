@@ -8,13 +8,15 @@ import { FilterTaskDto } from './dto/filter-task.dto';
 import { User } from '../auth/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TypeService } from '../type/type.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository,
-    private eventEmitter: EventEmitter2
+    // private eventEmitter: EventEmitter2
+    private typeService: TypeService
   ) {
   }
 
@@ -30,8 +32,9 @@ export class TasksService {
     return result;
   }
 
-  createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
-    const result = this.tasksRepository.createTask(createTaskDto, user);
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+    const type = await this.typeService.getTypeById(createTaskDto.typeId)
+    const result = await this.tasksRepository.createTask(createTaskDto, user, type);
     // this.eventEmitter.emit(
     //   'order.created',
     //   user

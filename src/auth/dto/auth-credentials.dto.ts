@@ -1,9 +1,9 @@
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class AuthCredentialsDto {
   @IsString()
   @MinLength(4)
-  @MaxLength(20)
+  @MaxLength(100)
   username: string;
 
   @IsString()
@@ -13,4 +13,7 @@ export class AuthCredentialsDto {
     { message: 'Password is too weak' }
   )
   password: string;
+
+  // @IsBoolean()
+  isGoogleSignUp: boolean;
 }

@@ -14,6 +14,6 @@ export class User {
 
   @OneToMany((_type) => Task,
     (task) => task.user,
-    { eager: true })
+    { eager: false })
   tasks: Task;
 }

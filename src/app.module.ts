@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TypeModule } from './type/type.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       // // disable throwing uncaughtException if an error event is emitted and it has no listeners
       // ignoreErrors: false,
     }),
+    TypeModule,
   ]
 })
 export class AppModule {
