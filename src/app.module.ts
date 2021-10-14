@@ -8,7 +8,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [`.env.stage.${process.env.STAGE}`]
+      envFilePath: [`.env.stage.dev`]
     }),
     TasksModule,
     TypeOrmModule.forRootAsync({
